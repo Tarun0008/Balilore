@@ -7,9 +7,10 @@ import Stripe from 'stripe';
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
   apiVersion: '2024-04-10',
 });
-app.use(cors());
 
 const app = express();
+app.use(cors());
+
 const port = 3001;
 
 let raffleTickets = { 123: 0 };
