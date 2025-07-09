@@ -18,22 +18,18 @@ let raffleTickets = { 123: 0 };
 app.use(cors());
 app.use(bodyParser.json());
 
-// ✅ Get raffle status
 app.get('/api/raffle-status', (req, res) => {
   const userId = req.query.userId;
   const tickets = raffleTickets[userId] || 0;
   return res.json({ tickets });
 });
 
-// ✅ Enter raffle (extra option if needed)
 app.post('/api/raffle-entry', (req, res) => {
   const userId = req.body.userId;
   raffleTickets[userId] = (raffleTickets[userId] || 0) + 1;
   return res.json({ success: true, tickets: raffleTickets[userId] });
 });
 
-// ✅ Create Stripe Checkout session
-// ✅ Create Stripe Checkout session
 app.post('/api/create-checkout-session', async (req, res) => {
   try {
     const session = await stripe.checkout.sessions.create({
@@ -52,16 +48,12 @@ app.post('/api/create-checkout-session', async (req, res) => {
       success_url: 'http://localhost:3000/payment-success?session_id={CHECKOUT_SESSION_ID}',
       cancel_url: 'http://localhost:3000/payment-canceled',
     });
-console.log('✅ Created Stripe session:', session);
-console.log('✅ Checkout URL:', session.url);
-    res.json({ sessionUrl: session.url }); // ✅ Return the Stripe Checkout URL!
+    res.json({ sessionUrl: session.url }); 
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'Failed to create checkout session' });
   }
 });
-
-// ✅ Stripe webhook to confirm payment
 app.post(
   '/api/stripe-webhook',
   bodyParser.raw({ type: 'application/json' }),
@@ -81,7 +73,7 @@ app.post(
     }
 
     if (event.type === 'checkout.session.completed') {
-      const userId = 123; // Replace with metadata for real user
+      const userId = 123; 
       raffleTickets[userId] = (raffleTickets[userId] || 0) + 1;
       console.log(`✅ Payment received. User ${userId} now has ${raffleTickets[userId]} tickets.`);
     }
